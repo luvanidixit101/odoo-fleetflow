@@ -30,8 +30,7 @@ DEBUG = env_bool('DJANGO_DEBUG', True)
 # ✅ Railway domain added as fallback
 ALLOWED_HOSTS = env_list(
     'DJANGO_ALLOWED_HOSTS',
-    '127.0.0.1,localhost',
-    'odoo-fleetflow-production.up.railway.app'
+    '127.0.0.1,localhost,odoo-fleetflow-production.up.railway.app'
 )
 
 # ✅ CSRF trusted origins for Railway HTTPS
