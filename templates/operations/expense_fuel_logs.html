@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm"><div class="card-body"><p class="mb-1 text-secondary">Fuel Cost</p><h4>{{ fuel_total }}</h4></div></div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm"><div class="card-body"><p class="mb-1 text-secondary">Maintenance Cost</p><h4>{{ maintenance_total }}</h4></div></div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm"><div class="card-body"><p class="mb-1 text-secondary">Total Operational Cost</p><h4>{{ total_operational_cost }}</h4></div></div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h5><i class="bi bi-fuel-pump me-2"></i>Add Fuel Log</h5>
+                <form method="post" class="row g-2">
+                    {% csrf_token %}
+                    {% if fuel_form.non_field_errors %}
+                    <div class="alert alert-danger py-2">{{ fuel_form.non_field_errors }}</div>
+                    {% endif %}
+                    {% for field in fuel_form %}
+                    <div class="col-md-6">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                    <div class="col-12"><button class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>Save Fuel Log</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h5><i class="bi bi-receipt me-2"></i>Fuel Records</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead><tr><th>Date</th><th>Vehicle</th><th>Trip</th><th>Liters</th><th>Cost</th></tr></thead>
+                        <tbody>
+                            {% for f in fuel_logs %}
+                            <tr>
+                                <td>{{ f.logged_on }}</td>
+                                <td>{{ f.vehicle.license_plate }}</td>
+                                <td>{% if f.trip %}{{ f.trip.trip_code }}{% else %}-{% endif %}</td>
+                                <td>{{ f.liters }}</td>
+                                <td>{{ f.cost }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="5" class="text-center text-secondary">No fuel records.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row g-3 mb-3">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between"><span>Active Fleet</span><i class="bi bi-truck metric-icon text-primary"></i></div>
+                <h3 class="mt-2 mb-0">{{ active_fleet }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between"><span>Maintenance Alerts</span><i class="bi bi-cone-striped metric-icon text-warning"></i></div>
+                <h3 class="mt-2 mb-0">{{ maintenance_alerts }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between"><span>Utilization Rate</span><i class="bi bi-speedometer2 metric-icon text-success"></i></div>
+                <h3 class="mt-2 mb-0">{{ utilization_rate }}%</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between"><span>Pending Cargo</span><i class="bi bi-box-seam metric-icon text-danger"></i></div>
+                <h3 class="mt-2 mb-0">{{ pending_cargo }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body">
+        <h5><i class="bi bi-funnel me-2"></i>Fleet Filters</h5>
+        <form class="row g-2" method="get">
+            <div class="col-md-3">
+                <select name="vehicle_type" class="form-select">
+                    <option value="">All Types</option>
+                    {% for value, label in vehicle_types %}
+                    <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="status" class="form-select">
+                    <option value="">All Statuses</option>
+                    {% for value, label in statuses %}
+                    <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3"><input class="form-control" name="region" placeholder="Region"></div>
+            <div class="col-md-3"><button class="btn btn-primary w-100"><i class="bi bi-search me-1"></i>Apply Filters</button></div>
+        </form>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <h5><i class="bi bi-list-check me-2"></i>Fleet Snapshot</h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead><tr><th>Plate</th><th>Model</th><th>Type</th><th>Status</th><th>Region</th></tr></thead>
+                <tbody>
+                {% for vehicle in vehicles %}
+                    <tr>
+                        <td>{{ vehicle.license_plate }}</td>
+                        <td>{{ vehicle.name_model }}</td>
+                        <td>{{ vehicle.get_vehicle_type_display }}</td>
+                        <td><span class="status-pill status-{{ vehicle.status }}">{{ vehicle.get_status_display }}</span></td>
+                        <td>{{ vehicle.region|default:"-" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5" class="text-center text-secondary">No vehicles found.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

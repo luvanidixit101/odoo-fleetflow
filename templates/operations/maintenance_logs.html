@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row g-3">
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h5><i class="bi bi-wrench-adjustable me-2"></i>Add Service Log</h5>
+                <form method="post" class="row g-2">
+                    {% csrf_token %}
+                    {% if service_form.non_field_errors %}
+                    <div class="alert alert-danger py-2">{{ service_form.non_field_errors }}</div>
+                    {% endif %}
+                    {% for field in service_form %}
+                    <div class="col-md-6">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                    <div class="col-12"><button class="btn btn-primary"><i class="bi bi-tools me-1"></i>Save Service Log</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h5><i class="bi bi-journal-check me-2"></i>Maintenance History</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead><tr><th>Vehicle</th><th>Service</th><th>Date</th><th>Cost</th><th>Open</th></tr></thead>
+                        <tbody>
+                            {% for s in service_logs %}
+                            <tr>
+                                <td>{{ s.vehicle.license_plate }}</td>
+                                <td>{{ s.service_type }}</td>
+                                <td>{{ s.service_date }}</td>
+                                <td>{{ s.cost }}</td>
+                                <td>{% if s.is_open %}<span class="badge text-bg-warning">In Shop</span>{% else %}<span class="badge text-bg-success">Closed</span>{% endif %}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="5" class="text-center text-secondary">No maintenance logs.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

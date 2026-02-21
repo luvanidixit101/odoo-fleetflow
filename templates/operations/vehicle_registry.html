@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row g-3">
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h5><i class="bi bi-plus-square me-2"></i>Add / Update Vehicle</h5>
+                <form method="post" class="row g-2">
+                    {% csrf_token %}
+                    {% if vehicle_form.non_field_errors %}
+                    <div class="alert alert-danger py-2">{{ vehicle_form.non_field_errors }}</div>
+                    {% endif %}
+                    {% for field in vehicle_form %}
+                    <div class="col-md-6">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                    <div class="col-12"><button class="btn btn-primary"><i class="bi bi-check-circle me-1"></i>Save Vehicle</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h5><i class="bi bi-truck me-2"></i>Vehicle Registry</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead><tr><th>Plate</th><th>Model</th><th>Capacity (kg)</th><th>Odometer</th><th>Status</th></tr></thead>
+                        <tbody>
+                            {% for v in vehicles %}
+                            <tr>
+                                <td>{{ v.license_plate }}</td>
+                                <td>{{ v.name_model }}</td>
+                                <td>{{ v.max_load_capacity_kg }}</td>
+                                <td>{{ v.odometer_km }}</td>
+                                <td><span class="status-pill status-{{ v.status }}">{{ v.get_status_display }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="5" class="text-center text-secondary">No vehicles added yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row g-3 mb-3">
+    <div class="col-xl-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h5><i class="bi bi-box-seam me-2"></i>Create Shipment</h5>
+                <form method="post" class="row g-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="create_shipment">
+                    {% if shipment_form.non_field_errors %}
+                    <div class="alert alert-danger py-2">{{ shipment_form.non_field_errors }}</div>
+                    {% endif %}
+                    {% for field in shipment_form %}
+                    <div class="col-md-6">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                    <div class="col-12"><button class="btn btn-outline-primary"><i class="bi bi-plus-circle me-1"></i>Add Shipment</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h5><i class="bi bi-sign-turn-right me-2"></i>Create Trip</h5>
+                <form method="post" class="row g-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="create_trip">
+                    {% if trip_form.non_field_errors %}
+                    <div class="alert alert-danger py-2">{{ trip_form.non_field_errors }}</div>
+                    {% endif %}
+                    {% for field in trip_form %}
+                    <div class="col-md-6">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                    <div class="col-12"><button class="btn btn-primary"><i class="bi bi-check2-circle me-1"></i>Create Trip</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <h5><i class="bi bi-card-list me-2"></i>Current Trips</h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead><tr><th>Trip</th><th>Vehicle</th><th>Driver</th><th>Cargo (kg)</th><th>Status</th></tr></thead>
+                <tbody>
+                    {% for t in trips %}
+                    <tr>
+                        <td>{{ t.trip_code }}</td>
+                        <td>{{ t.vehicle.license_plate }}</td>
+                        <td>{{ t.driver.full_name }}</td>
+                        <td>{{ t.cargo_weight_kg }}</td>
+                        <td><span class="status-pill status-{{ t.status }}">{{ t.get_status_display }}</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="text-center text-secondary">No trips created.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
