@@ -1,8 +1,11 @@
 from decimal import Decimal
+import socket
 
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils import timezone
 
 from .models import DriverProfile, FuelLog, ServiceLog, Shipment, Trip, Vehicle, VehicleStatus
@@ -120,6 +123,49 @@ class ClientRegistrationForm(UserCreationForm):
 
     def clean_email(self):
         email = self.cleaned_data['email'].strip().lower()
+        try:
+            validate_email(email)
+        except DjangoValidationError:
+            raise forms.ValidationError('Enter a valid email address.')
+
+        if '@' not in email:
+            raise forms.ValidationError('Email must contain a valid domain name.')
+
+        domain = email.split('@', 1)[1].strip().lower()
+        parts = domain.split('.')
+        if len(parts) < 2:
+            raise forms.ValidationError('Email domain must include a valid extension (example: company.com).')
+
+        for part in parts:
+            if not part or part.startswith('-') or part.endswith('-'):
+                raise forms.ValidationError('Email domain format is invalid.')
+
+        # Basic DNS existence check for domain.
+        try:
+            socket.getaddrinfo(domain, None)
+        except socket.gaierror:
+            raise forms.ValidationError('Email domain does not appear to exist.')
+
         if User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError('This email is already registered.')
         return email
+
+    def clean_username(self):
+        username = self.cleaned_data['username'].strip().lower()
+        if len(username) < 4:
+            raise forms.ValidationError('Username must be at least 4 characters.')
+        if User.objects.filter(username__iexact=username).exists():
+            raise forms.ValidationError('This username is already taken. Please choose another.')
+        return username
+
+
+class ClientLoginForm(AuthenticationForm):
+    username = forms.CharField(
+        label='Email / Username',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter username or email'}),
+    )
+    password = forms.CharField(
+        label='Password',
+        strip=False,
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter password'}),
+    )

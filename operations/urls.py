@@ -1,10 +1,11 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
+from .forms import ClientLoginForm
 from . import views
 
 urlpatterns = [
-    path('login/', auth_views.LoginView.as_view(template_name='auth/login.html'), name='login'),
+    path('login/', auth_views.LoginView.as_view(template_name='auth/login.html', authentication_form=ClientLoginForm), name='login'),
     path('register/', views.register, name='register'),
     path('', views.dashboard, name='dashboard'),
     path('vehicles/', views.vehicle_registry, name='vehicle_registry'),
