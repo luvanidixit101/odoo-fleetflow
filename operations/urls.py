@@ -1,12 +1,16 @@
-from django.contrib.auth import views as auth_views
 from django.urls import path
 
-from .forms import ClientLoginForm
 from . import views
 
 urlpatterns = [
-    path('login/', auth_views.LoginView.as_view(template_name='auth/login.html', authentication_form=ClientLoginForm), name='login'),
+    path('login/', views.RoleBasedLoginView.as_view(), name='login'),
+    path('forgot-password/', views.forgot_password_request, name='forgot_password'),
+    path('forgot-password/verify/', views.forgot_password_verify, name='forgot_password_verify'),
+    path('forgot-password/reset/', views.forgot_password_reset, name='forgot_password_reset'),
     path('register/', views.register, name='register'),
+    path('email/test/', views.send_test_email, name='send_test_email'),
+    path('settings/admin-invite-code/', views.manage_admin_invite_code, name='manage_admin_invite_code'),
+    path('user/', views.user_portal, name='user_portal'),
     path('', views.dashboard, name='dashboard'),
     path('vehicles/', views.vehicle_registry, name='vehicle_registry'),
     path('trips/', views.trip_dispatcher, name='trip_dispatcher'),

@@ -1,5 +1,13 @@
 from django.contrib import admin
 
+from .models import SystemSetting
+
+
+@admin.register(SystemSetting)
+class SystemSettingAdmin(admin.ModelAdmin):
+    list_display = ('key', 'updated_at')
+    search_fields = ('key',)
+
 from .models import DriverProfile, FuelLog, ServiceLog, Shipment, Trip, Vehicle
 
 

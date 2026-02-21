@@ -1,10 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="card page-hero mb-3">
+    <div class="card-body p-0">
+        <h2 class="hero-title"><i class="bi bi-truck me-2"></i>Vehicle Registry</h2>
+        <p class="hero-subtitle">Manage vehicle assets, lifecycle status, and fleet records.</p>
+    </div>
+</div>
+
 <div class="row g-3">
     <div class="col-lg-5">
         <div class="card border-0 shadow-sm">
             <div class="card-body">
-                <h5><i class="bi bi-plus-square me-2"></i>Add / Update Vehicle</h5>
+                <h5 class="section-title"><i class="bi bi-plus-square me-2"></i>Add / Update Vehicle</h5>
                 <form method="post" class="row g-2">
                     {% csrf_token %}
                     {% if vehicle_form.non_field_errors %}
@@ -27,7 +34,7 @@
     <div class="col-lg-7">
         <div class="card border-0 shadow-sm">
             <div class="card-body">
-                <h5><i class="bi bi-truck me-2"></i>Vehicle Registry</h5>
+                <h5 class="section-title"><i class="bi bi-truck me-2"></i>Vehicle Registry</h5>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead><tr><th>Plate</th><th>Model</th><th>Capacity (kg)</th><th>Odometer</th><th>Status</th></tr></thead>

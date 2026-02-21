@@ -1,14 +1,18 @@
 from decimal import Decimal
+import os
 import socket
 
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm, UserCreationForm
 from django.contrib.auth.models import User
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils import timezone
 
-from .models import DriverProfile, FuelLog, ServiceLog, Shipment, Trip, Vehicle, VehicleStatus
+from .models import DriverProfile, FuelLog, ServiceLog, Shipment, SystemSetting, Trip, Vehicle, VehicleStatus
+
+
+ADMIN_INVITE_CODE_SETTING_KEY = 'admin_registration_token'
 
 
 class BootstrapModelForm(forms.ModelForm):
@@ -108,18 +112,49 @@ class FuelLogForm(BootstrapModelForm):
 
 
 class ClientRegistrationForm(UserCreationForm):
+    ACCOUNT_ROLE_CHOICES = (
+        ('user', 'User'),
+        ('admin', 'Admin'),
+        ('fleet_manager', 'Fleet Managers'),
+        ('dispatcher', 'Dispatchers'),
+        ('safety_officer', 'Safety Officers'),
+        ('financial_analyst', 'Financial Analysts'),
+    )
+
+    register_as = forms.ChoiceField(
+        label='Register as',
+        choices=ACCOUNT_ROLE_CHOICES,
+        initial='user',
+        widget=forms.Select(attrs={'class': 'form-select'}),
+    )
+    admin_invite_code = forms.CharField(
+        label='Admin Invite Code',
+        required=False,
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Required only for admin registration'}),
+    )
     email = forms.EmailField(required=True)
     first_name = forms.CharField(max_length=150, required=False)
     last_name = forms.CharField(max_length=150, required=False)
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
+        fields = (
+            'register_as',
+            'admin_invite_code',
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'password1',
+            'password2',
+        )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
+        self.fields['first_name'].widget.attrs['autocomplete'] = 'off'
+        self.fields['last_name'].widget.attrs['autocomplete'] = 'off'
 
     def clean_email(self):
         email = self.cleaned_data['email'].strip().lower()
@@ -158,8 +193,49 @@ class ClientRegistrationForm(UserCreationForm):
             raise forms.ValidationError('This username is already taken. Please choose another.')
         return username
 
+    def clean(self):
+        cleaned_data = super().clean()
+        role = cleaned_data.get('register_as', 'user')
+        invite_code = (cleaned_data.get('admin_invite_code') or '').strip()
+        expected_code = (
+            SystemSetting.get_value(
+                ADMIN_INVITE_CODE_SETTING_KEY,
+                (os.getenv('ADMIN_REGISTRATION_TOKEN', '') or '').strip(),
+            )
+            or ''
+        ).strip()
+
+        if role == 'admin':
+            if not expected_code or invite_code != expected_code:
+                raise forms.ValidationError('Authentication failed. Please check your registration details and try again.')
+        return cleaned_data
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        role = self.cleaned_data.get('register_as', 'user')
+        user.is_staff = role == 'admin'
+        user.is_superuser = False
+        if commit:
+            user.save()
+        return user
+
 
 class ClientLoginForm(AuthenticationForm):
+    USER_ROLE_CHOICES = (
+        ('user', 'User'),
+        ('admin', 'Admin'),
+        ('fleet_manager', 'Fleet Managers'),
+        ('dispatcher', 'Dispatchers'),
+        ('safety_officer', 'Safety Officers'),
+        ('financial_analyst', 'Financial Analysts'),
+    )
+
+    login_as = forms.ChoiceField(
+        label='Login as',
+        choices=USER_ROLE_CHOICES,
+        initial='user',
+        widget=forms.Select(attrs={'class': 'form-select'}),
+    )
     username = forms.CharField(
         label='Email / Username',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter username or email'}),
@@ -169,3 +245,36 @@ class ClientLoginForm(AuthenticationForm):
         strip=False,
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter password'}),
     )
+
+
+class ForgotPasswordEmailForm(forms.Form):
+    email = forms.EmailField(
+        label='Registered Email',
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter registered email'}),
+    )
+
+
+class ForgotPasswordOTPForm(forms.Form):
+    otp = forms.CharField(
+        label='OTP Code',
+        min_length=6,
+        max_length=6,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter 6-digit OTP'}),
+    )
+
+    def clean_otp(self):
+        value = (self.cleaned_data.get('otp') or '').strip()
+        if not value.isdigit():
+            raise forms.ValidationError('OTP must contain only digits.')
+        return value
+
+
+class OTPSetPasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['new_password1'].widget.attrs.update(
+            {'class': 'form-control', 'placeholder': 'Enter new password'}
+        )
+        self.fields['new_password2'].widget.attrs.update(
+            {'class': 'form-control', 'placeholder': 'Confirm new password'}
+        )

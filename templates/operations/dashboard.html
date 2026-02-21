@@ -1,35 +1,51 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="card page-hero mb-3">
+    <div class="card-body p-0">
+        <h2 class="hero-title"><i class="bi bi-speedometer2 me-2"></i>Operations Dashboard</h2>
+        <p class="hero-subtitle">Track fleet performance, utilization, and pending workload in one view.</p>
+        {% if user.is_staff or user.is_superuser %}
+        <div class="d-flex flex-wrap gap-2 mt-3">
+            <form method="post" action="{% url 'send_test_email' %}">
+                {% csrf_token %}
+                <button class="btn btn-outline-primary btn-sm" type="submit"><i class="bi bi-envelope-check me-1"></i>Send SMTP Test Email</button>
+            </form>
+            <a class="btn btn-primary btn-sm" href="{% url 'manage_admin_invite_code' %}"><i class="bi bi-key me-1"></i>Manage Admin Invite Code</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
 <div class="row g-3 mb-3">
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm h-100">
+        <div class="card kpi-card border-0 shadow-sm h-100">
             <div class="card-body">
-                <div class="d-flex justify-content-between"><span>Active Fleet</span><i class="bi bi-truck metric-icon text-primary"></i></div>
-                <h3 class="mt-2 mb-0">{{ active_fleet }}</h3>
+                <div class="d-flex justify-content-between"><p class="kpi-label">Active Fleet</p><i class="bi bi-truck metric-icon text-primary"></i></div>
+                <h3 class="kpi-value">{{ active_fleet }}</h3>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm h-100">
+        <div class="card kpi-card border-0 shadow-sm h-100">
             <div class="card-body">
-                <div class="d-flex justify-content-between"><span>Maintenance Alerts</span><i class="bi bi-cone-striped metric-icon text-warning"></i></div>
-                <h3 class="mt-2 mb-0">{{ maintenance_alerts }}</h3>
+                <div class="d-flex justify-content-between"><p class="kpi-label">Maintenance Alerts</p><i class="bi bi-cone-striped metric-icon text-warning"></i></div>
+                <h3 class="kpi-value">{{ maintenance_alerts }}</h3>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm h-100">
+        <div class="card kpi-card border-0 shadow-sm h-100">
             <div class="card-body">
-                <div class="d-flex justify-content-between"><span>Utilization Rate</span><i class="bi bi-speedometer2 metric-icon text-success"></i></div>
-                <h3 class="mt-2 mb-0">{{ utilization_rate }}%</h3>
+                <div class="d-flex justify-content-between"><p class="kpi-label">Utilization Rate</p><i class="bi bi-speedometer2 metric-icon text-success"></i></div>
+                <h3 class="kpi-value">{{ utilization_rate }}%</h3>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm h-100">
+        <div class="card kpi-card border-0 shadow-sm h-100">
             <div class="card-body">
-                <div class="d-flex justify-content-between"><span>Pending Cargo</span><i class="bi bi-box-seam metric-icon text-danger"></i></div>
-                <h3 class="mt-2 mb-0">{{ pending_cargo }}</h3>
+                <div class="d-flex justify-content-between"><p class="kpi-label">Pending Cargo</p><i class="bi bi-box-seam metric-icon text-danger"></i></div>
+                <h3 class="kpi-value">{{ pending_cargo }}</h3>
             </div>
         </div>
     </div>
@@ -37,7 +53,7 @@
 
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-body">
-        <h5><i class="bi bi-funnel me-2"></i>Fleet Filters</h5>
+        <h5 class="section-title"><i class="bi bi-funnel me-2"></i>Fleet Filters</h5>
         <form class="row g-2" method="get">
             <div class="col-md-3">
                 <select name="vehicle_type" class="form-select">
@@ -63,7 +79,7 @@
 
 <div class="card border-0 shadow-sm">
     <div class="card-body">
-        <h5><i class="bi bi-list-check me-2"></i>Fleet Snapshot</h5>
+        <h5 class="section-title"><i class="bi bi-list-check me-2"></i>Fleet Snapshot</h5>
         <div class="table-responsive">
             <table class="table table-hover align-middle">
                 <thead><tr><th>Plate</th><th>Model</th><th>Type</th><th>Status</th><th>Region</th></tr></thead>

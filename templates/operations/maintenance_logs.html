@@ -1,10 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="card page-hero mb-3">
+    <div class="card-body p-0">
+        <h2 class="hero-title"><i class="bi bi-wrench-adjustable-circle me-2"></i>Maintenance Logs</h2>
+        <p class="hero-subtitle">Capture service work and track vehicle repair lifecycle.</p>
+    </div>
+</div>
+
 <div class="row g-3">
     <div class="col-lg-5">
         <div class="card border-0 shadow-sm">
             <div class="card-body">
-                <h5><i class="bi bi-wrench-adjustable me-2"></i>Add Service Log</h5>
+                <h5 class="section-title"><i class="bi bi-wrench-adjustable me-2"></i>Add Service Log</h5>
                 <form method="post" class="row g-2">
                     {% csrf_token %}
                     {% if service_form.non_field_errors %}
@@ -27,7 +34,7 @@
     <div class="col-lg-7">
         <div class="card border-0 shadow-sm">
             <div class="card-body">
-                <h5><i class="bi bi-journal-check me-2"></i>Maintenance History</h5>
+                <h5 class="section-title"><i class="bi bi-journal-check me-2"></i>Maintenance History</h5>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead><tr><th>Vehicle</th><th>Service</th><th>Date</th><th>Cost</th><th>Open</th></tr></thead>

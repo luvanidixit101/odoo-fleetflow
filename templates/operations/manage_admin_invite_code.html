@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card page-hero mb-3">
+    <div class="card-body p-0">
+        <h2 class="hero-title"><i class="bi bi-key me-2"></i>Admin Invite Code</h2>
+        <p class="hero-subtitle">Use this code for admin registration on the Register page.</p>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <h5 class="section-title"><i class="bi bi-shield-lock me-2"></i>Current Code</h5>
+        <div class="soft-block mb-3">
+            <code style="font-size: 1rem; word-break: break-all;">{{ current_code }}</code>
+        </div>
+        <form method="post" class="d-flex flex-wrap gap-2">
+            {% csrf_token %}
+            <button class="btn btn-primary" type="submit"><i class="bi bi-arrow-repeat me-1"></i>Generate New Code</button>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">Back to Dashboard</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

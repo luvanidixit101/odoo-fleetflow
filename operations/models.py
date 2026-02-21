@@ -280,3 +280,27 @@ class FuelLog(models.Model):
     def clean(self):
         if self.trip_id and self.trip.vehicle_id != self.vehicle_id:
             raise ValidationError('Fuel log vehicle must match trip vehicle.')
+
+
+class SystemSetting(models.Model):
+    key = models.CharField(max_length=120, unique=True)
+    value = models.TextField(blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['key']
+
+    def __str__(self):
+        return self.key
+
+    @classmethod
+    def get_value(cls, key, default=''):
+        record = cls.objects.filter(key=key).first()
+        if record:
+            return record.value
+        return default
+
+    @classmethod
+    def set_value(cls, key, value):
+        obj, _ = cls.objects.update_or_create(key=key, defaults={'value': value})
+        return obj

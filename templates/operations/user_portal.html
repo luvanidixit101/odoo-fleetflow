@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card page-hero mb-3">
+    <div class="card-body">
+        <h2 class="hero-title"><i class="bi bi-person-circle me-2"></i>User Portal</h2>
+        <p class="hero-subtitle">Welcome, {{ user.get_full_name|default:user.username }}. Here is your activity snapshot.</p>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-6">
+        <div class="card kpi-card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between"><p class="kpi-label">Active Trips</p><i class="bi bi-sign-turn-right metric-icon text-primary"></i></div>
+                <h3 class="kpi-value">{{ active_trips }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card kpi-card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between"><p class="kpi-label">Pending Shipments</p><i class="bi bi-box-seam metric-icon text-warning"></i></div>
+                <h3 class="kpi-value">{{ pending_shipments }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

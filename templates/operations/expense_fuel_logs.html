@@ -1,14 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="card page-hero mb-3">
+    <div class="card-body p-0">
+        <h2 class="hero-title"><i class="bi bi-fuel-pump me-2"></i>Expense & Fuel Logs</h2>
+        <p class="hero-subtitle">Monitor spend trends and keep operational cost entries up to date.</p>
+    </div>
+</div>
+
 <div class="row g-3 mb-3">
     <div class="col-md-4">
-        <div class="card border-0 shadow-sm"><div class="card-body"><p class="mb-1 text-secondary">Fuel Cost</p><h4>{{ fuel_total }}</h4></div></div>
+        <div class="card kpi-card border-0 shadow-sm"><div class="card-body"><p class="kpi-label">Fuel Cost</p><h4 class="kpi-value">{{ fuel_total }}</h4></div></div>
     </div>
     <div class="col-md-4">
-        <div class="card border-0 shadow-sm"><div class="card-body"><p class="mb-1 text-secondary">Maintenance Cost</p><h4>{{ maintenance_total }}</h4></div></div>
+        <div class="card kpi-card border-0 shadow-sm"><div class="card-body"><p class="kpi-label">Maintenance Cost</p><h4 class="kpi-value">{{ maintenance_total }}</h4></div></div>
     </div>
     <div class="col-md-4">
-        <div class="card border-0 shadow-sm"><div class="card-body"><p class="mb-1 text-secondary">Total Operational Cost</p><h4>{{ total_operational_cost }}</h4></div></div>
+        <div class="card kpi-card border-0 shadow-sm"><div class="card-body"><p class="kpi-label">Total Operational Cost</p><h4 class="kpi-value">{{ total_operational_cost }}</h4></div></div>
     </div>
 </div>
 
@@ -16,7 +23,7 @@
     <div class="col-lg-5">
         <div class="card border-0 shadow-sm">
             <div class="card-body">
-                <h5><i class="bi bi-fuel-pump me-2"></i>Add Fuel Log</h5>
+                <h5 class="section-title"><i class="bi bi-fuel-pump me-2"></i>Add Fuel Log</h5>
                 <form method="post" class="row g-2">
                     {% csrf_token %}
                     {% if fuel_form.non_field_errors %}
@@ -39,7 +46,7 @@
     <div class="col-lg-7">
         <div class="card border-0 shadow-sm">
             <div class="card-body">
-                <h5><i class="bi bi-receipt me-2"></i>Fuel Records</h5>
+                <h5 class="section-title"><i class="bi bi-receipt me-2"></i>Fuel Records</h5>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead><tr><th>Date</th><th>Vehicle</th><th>Trip</th><th>Liters</th><th>Cost</th></tr></thead>
