@@ -1,14 +1,18 @@
 import os
 from pathlib import Path
-
 import dj_database_url
 
+# -----------------------
+# Basic Path Configuration
+# -----------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+# -----------------------
+# Helper Functions
+# -----------------------
 def env_bool(name, default=False):
     return os.getenv(name, str(default)).strip().lower() in {'1', 'true', 'yes', 'on'}
-
 
 def env_list(name, default=''):
     value = os.getenv(name, default).strip()
@@ -17,12 +21,28 @@ def env_list(name, default=''):
     return [item.strip() for item in value.split(',') if item.strip()]
 
 
+# -----------------------
+# Core Django Settings
+# -----------------------
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-dev-only-change-me')
 DEBUG = env_bool('DJANGO_DEBUG', True)
-ALLOWED_HOSTS = env_list('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost')
-CSRF_TRUSTED_ORIGINS = env_list('DJANGO_CSRF_TRUSTED_ORIGINS', '')
+
+# ✅ Railway domain added as fallback
+ALLOWED_HOSTS = env_list(
+    'DJANGO_ALLOWED_HOSTS',
+    '127.0.0.1,localhost,odoo-fleetflow-production.up.railway.app'
+)
+
+# ✅ CSRF trusted origins for Railway HTTPS
+CSRF_TRUSTED_ORIGINS = env_list(
+    'DJANGO_CSRF_TRUSTED_ORIGINS',
+    'https://odoo-fleetflow-production.up.railway.app'
+)
 
 
+# -----------------------
+# Installed Apps
+# -----------------------
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -30,9 +50,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'operations',
+    'operations',  # your app
 ]
 
+
+# -----------------------
+# Middleware
+# -----------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -44,6 +68,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
+# -----------------------
+# URL and Templates
+# -----------------------
 ROOT_URLCONF = 'fleet_hub.urls'
 
 TEMPLATES = [
@@ -63,6 +91,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'fleet_hub.wsgi.application'
 
+
+# -----------------------
+# Database Configuration
+# -----------------------
 default_db = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
 DATABASES = {
     'default': dj_database_url.parse(
@@ -73,31 +105,29 @@ DATABASES = {
 }
 
 
+# -----------------------
+# Authentication
+# -----------------------
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 
+# -----------------------
+# Internationalization
+# -----------------------
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = os.getenv('DJANGO_TIME_ZONE', 'UTC')
-
 USE_I18N = True
-
 USE_TZ = True
 
 
+# -----------------------
+# Static & Media Files
+# -----------------------
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -105,10 +135,18 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+
+# -----------------------
+# Login/Logout Redirects
+# -----------------------
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
 
+
+# -----------------------
+# Email Settings
+# -----------------------
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@fleethub.local')
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
 EMAIL_HOST = os.getenv('EMAIL_HOST', '')
@@ -118,6 +156,10 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 EMAIL_USE_TLS = env_bool('EMAIL_USE_TLS', True)
 EMAIL_USE_SSL = env_bool('EMAIL_USE_SSL', False)
 
+
+# -----------------------
+# Security (SSL/Proxy)
+# -----------------------
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = env_bool('SECURE_SSL_REDIRECT', not DEBUG)
 SESSION_COOKIE_SECURE = env_bool('SESSION_COOKIE_SECURE', not DEBUG)
